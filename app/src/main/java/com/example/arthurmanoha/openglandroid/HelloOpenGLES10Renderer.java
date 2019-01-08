@@ -35,10 +35,15 @@ public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
     // Point of view; the two images will be rendered from either side of this point.
     private Empty viewerEmpty;
 
+    // Percentage of the width of the screen used by the image
+    // If the image is too wide, the user cannot focus both eyes properly.
+    // Values from 0 (image compressed on the central pixel line) to 1 (full screen used).
+    private float screenPercentage;
 
     public HelloOpenGLES10Renderer(int widthParam, int heightParam) {
         width = widthParam;
         height = heightParam;
+        screenPercentage = 0.8f;
     }
 
     public void setEmpty(Empty e) {
@@ -75,10 +80,10 @@ public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
 
         long time = SystemClock.uptimeMillis();
         angle = 0.0012f * ((int) time);
-        viewerEmpty.resetRotation();
+//        viewerEmpty.resetRotation();
 
-        viewerEmpty.rotateLocalY(-0.25f);
-        viewerEmpty.rotateGlobalZ(angle);
+//        viewerEmpty.rotateLocalY(-0.25f);
+//        viewerEmpty.rotateGlobalZ(angle);
 
         Vector realTarget = viewerEmpty.getPos().sum(viewerEmpty.getTarget());
 //        Log.d(TAG, "onDrawFrame: realTarget is " + realTarget);
@@ -96,7 +101,10 @@ public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
 
         // Left image
         gl.glLoadIdentity();
-        gl.glViewport(0, 0, width / 2, height);
+        gl.glViewport((int) ((width / 2) * (1 - screenPercentage)),
+                (int) ((height / 2) * (1 - screenPercentage)),
+                (int) (screenPercentage * width / 2),
+                (int) (screenPercentage * height));
         GLU.gluLookAt(gl, eyeX, eyeY, eyeZ,
                 eyeX + viewerEmpty.getTarget().getX(), eyeY + viewerEmpty.getTarget().getY(), eyeZ + viewerEmpty.getTarget().getZ(),
                 viewerEmpty.getVertic().getX(), viewerEmpty.getVertic().getY(), viewerEmpty.getVertic().getZ());
@@ -112,8 +120,11 @@ public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
 
         // Right image
         gl.glLoadIdentity();
-        gl.glViewport(width / 2, 0, width / 2, height);
-        gl.glMatrixMode(GL_MODELVIEW);
+        gl.glViewport(width / 2,
+                (int) ((height / 2) * (1 - screenPercentage)),
+                (int) (screenPercentage * width / 2),
+                (int) (screenPercentage * height));
+//        gl.glMatrixMode(GL_MODELVIEW);
         GLU.gluLookAt(gl, eyeX, eyeY, eyeZ,
                 eyeX + viewerEmpty.getTarget().getX(), eyeY + viewerEmpty.getTarget().getY(), eyeZ + viewerEmpty.getTarget().getZ(),
                 viewerEmpty.getVertic().getX(), viewerEmpty.getVertic().getY(), viewerEmpty.getVertic().getZ());

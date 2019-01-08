@@ -14,7 +14,7 @@ class HelloOpenGLES10SurfaceView extends GLSurfaceView {
 
         // Set the HelloOpenGLES10Renderer for drawing on the GLSurfaceView
 
-        com.example.arthurmanoha.openglandroid.HelloOpenGLES10Renderer myRenderer = new com.example.arthurmanoha.openglandroid.HelloOpenGLES10Renderer(getWidth(), getHeight());
+        HelloOpenGLES10Renderer myRenderer = new HelloOpenGLES10Renderer(getWidth(), getHeight());
         myRenderer.setEmpty(e);
         setRenderer(myRenderer);
 

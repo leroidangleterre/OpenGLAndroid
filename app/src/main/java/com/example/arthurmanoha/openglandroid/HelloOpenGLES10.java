@@ -1,11 +1,18 @@
 package com.example.arthurmanoha.openglandroid;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.example.arthurmanoha.openglandroid.Empty;
+
+import static java.lang.Math.PI;
 
 public class HelloOpenGLES10 extends AppCompatActivity {
 
@@ -15,6 +22,11 @@ public class HelloOpenGLES10 extends AppCompatActivity {
     public static String TAG = "Arthur App";
 
     private boolean systemUiVisible;
+
+    SensorManager sensorManager;
+    Sensor rotationVectorSensor;
+    SensorEventListener rotationListener;
+    float[] rotationMatrix;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,6 +42,36 @@ public class HelloOpenGLES10 extends AppCompatActivity {
 
         setContentView(mGLView);
         systemUiVisible = true;
+
+        rotationMatrix = new float[16];
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        rotationVectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        rotationListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                SensorManager.getRotationMatrixFromVector(
+                        rotationMatrix, event.values);
+                float[] orientations = new float[3];
+//                float[] orientationsDegrees = new float[3];
+                SensorManager.getOrientation(rotationMatrix, orientations);
+//                 Convert to degrees
+//                for (int i = 0; i < 3; i++) {
+//                    orientationsDegrees[i] = (float) (orientations[i] * 180 / PI);
+//                }
+
+//                Log.d(TAG, "onSensorChanged: orientations: " + orientationsDegrees[0] + ", " + orientationsDegrees[1] + ", " + orientationsDegrees[2]);
+                userEmpty.resetRotation();
+                userEmpty.rotateGlobalY((float) (-orientations[2] + PI / 2));
+                userEmpty.rotateGlobalZAroundTarget(-orientations[0]);
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+            }
+        };
+        sensorManager.registerListener(rotationListener, rotationVectorSensor, SensorManager.SENSOR_DELAY_GAME);
+
     }
 
     @Override
@@ -50,21 +92,21 @@ public class HelloOpenGLES10 extends AppCompatActivity {
         // this is a good place to re-allocate them.
         mGLView.onResume();
         showSystemUi(false);
+
     }
 
-    public void toggleSystemUi(){
+    public void toggleSystemUi() {
         showSystemUi(!systemUiVisible);
     }
 
     public void showSystemUi(boolean show) {
         // Hide the toolbars
         View decorView = getWindow().getDecorView();
-        if(show){
+        if (show) {
             // Show the UI
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE|
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE |
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-        }
-        else {
+        } else {
             // Hide the UI
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN |
                     View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
@@ -74,6 +116,6 @@ public class HelloOpenGLES10 extends AppCompatActivity {
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             );
         }
-        systemUiVisible=show;
+        systemUiVisible = show;
     }
 }
