@@ -114,6 +114,14 @@ public class Empty {
         return vertic;
     }
 
+    /**
+     * Rotate the empty around the global X-axis.
+     */
+    public void rotateGlobalX(float angle){
+        target.rotateGlobalX(angle);
+        left.rotateGlobalX(angle);
+        vertic.rotateGlobalX(angle);
+    }
 
     /**
      * Rotate the empty around the global Y-axis.
