@@ -27,6 +27,22 @@ public class Empty {
         distanceToTarget = 1;
     }
 
+    public Empty clone() {
+        Empty res = new Empty();
+
+        res.pos = pos.clone();
+        res.target = target.clone();
+        res.vertic = vertic.clone();
+        res.left = left.clone();
+        res.zAngle = zAngle;
+        res.distanceToTarget = distanceToTarget;
+        res.posLeft = posLeft.clone();
+        res.posRight = posRight.clone();
+        res.width = width;
+
+        return res;
+    }
+
     public void resetRotation() {
         target = new Vector(distanceToTarget, 0, 0);
         left = new Vector(0, 1, 0);
@@ -37,8 +53,10 @@ public class Empty {
     private void computeLeftRightPos() {
         posLeft = pos.sum(left.mult(width));
         posRight = pos.sum(left.mult(-width));
-        posLeft = pos.clone();
-        posRight = pos.clone();
+//        posLeft = pos.sum(left.mult(-1));
+//        posRight = pos.sum(left.mult(1));
+//        posLeft = pos.clone();
+//        posRight = pos.clone();
     }
 
     /**
@@ -46,6 +64,14 @@ public class Empty {
      */
     public void setPos(float x, float y, float z) {
         pos = new Vector(x, y, z);
+        computeLeftRightPos();
+    }
+
+    /**
+     * Set the position of the origin.
+     */
+    public void setPos(Vector newPos) {
+        pos = newPos;
         computeLeftRightPos();
     }
 
@@ -58,6 +84,31 @@ public class Empty {
         this.target = new Vector(xTarget, yTarget, zTarget);
         distanceToTarget = target.getNorm();
         computeLeftVector();
+    }
+
+    /**
+     * Set the target of the empty, from the referential of its current position.
+     *
+     * @param newTarget the new target
+     */
+    public void setTarget(Vector newTarget) {
+        this.target = newTarget;
+    }
+
+    /**
+     * Set the left of the empty. The new value may or may not be actually orthogonal to target and vertic.
+     * Used for cloning.
+     */
+    public void setLeft(Vector newLeft) {
+        this.left = newLeft;
+    }
+
+    /**
+     * Set the vertic of the empty. The new value may or may not be actually orthogonal to target and left.
+     * Used for cloning.
+     */
+    public void setVertic(Vector newVertic) {
+        this.left = newVertic;
     }
 
     /**
@@ -117,10 +168,11 @@ public class Empty {
     /**
      * Rotate the empty around the global X-axis.
      */
-    public void rotateGlobalX(float angle){
+    public void rotateGlobalX(float angle) {
         target.rotateGlobalX(angle);
         left.rotateGlobalX(angle);
         vertic.rotateGlobalX(angle);
+        computeLeftRightPos();
     }
 
     /**
@@ -130,6 +182,7 @@ public class Empty {
         target.rotateGlobalY(angle);
         left.rotateGlobalY(angle);
         vertic.rotateGlobalY(angle);
+        computeLeftRightPos();
     }
 
     /**
@@ -145,6 +198,7 @@ public class Empty {
 
         // Step 3: apply the inverse of the z-rotation in step 1.
         rotateGlobalZ(currentZAngle);
+        computeLeftRightPos();
     }
 
 
@@ -158,7 +212,7 @@ public class Empty {
         target.rotateGlobalZ(angle);
         left.rotateGlobalZ(angle);
         vertic.rotateGlobalZ(angle);
-//        computeLeftRightPos();
+        computeLeftRightPos();
     }
 
     /**
@@ -171,6 +225,7 @@ public class Empty {
         rotateGlobalZ(angle);
         centerOnTarget(realTarget);
         Log.d(TAG, "rotateGlobalZAroundTarget: centering on " + realTarget);
+        computeLeftRightPos();
     }
 
     /**
@@ -184,10 +239,12 @@ public class Empty {
 
         pos.add(diff);
 //        Log.d(TAG, "centerOnTarget: new target norm: " + target.getNorm());
+        computeLeftRightPos();
     }
 
     public void centerOnTarget(float x, float y, float z) {
         centerOnTarget(new Vector(x, y, z));
+        computeLeftRightPos();
     }
 
     /**

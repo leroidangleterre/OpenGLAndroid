@@ -11,8 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
-import com.example.arthurmanoha.openglandroid.Empty;
-
 import static java.lang.Math.PI;
 
 public class HelloOpenGLES10 extends AppCompatActivity {
@@ -56,17 +54,11 @@ public class HelloOpenGLES10 extends AppCompatActivity {
                 SensorManager.getRotationMatrixFromVector(
                         rotationMatrix, event.values);
                 float[] orientations = new float[3];
-//                float[] orientationsDegrees = new float[3];
                 SensorManager.getOrientation(rotationMatrix, orientations);
-//                 Convert to degrees
-//                for (int i = 0; i < 3; i++) {
-//                    orientationsDegrees[i] = (float) (orientations[i] * 180 / PI);
-//                }
 
-//                Log.d(TAG, "onSensorChanged: orientations: " + orientationsDegrees[0] + ", " + orientationsDegrees[1] + ", " + orientationsDegrees[2]);
                 userEmpty.resetRotation();
-                userEmpty.rotateGlobalX(orientations[1]);
                 userEmpty.rotateGlobalY((float) (-orientations[2] + PI / 2));
+                userEmpty.rotateGlobalX(orientations[1]);
                 userEmpty.rotateGlobalZAroundTarget(-orientations[0]);
             }
 
