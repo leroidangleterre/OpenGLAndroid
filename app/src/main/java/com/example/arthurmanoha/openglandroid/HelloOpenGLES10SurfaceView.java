@@ -17,15 +17,10 @@ class HelloOpenGLES10SurfaceView extends GLSurfaceView {
         HelloOpenGLES10Renderer myRenderer = new HelloOpenGLES10Renderer(getWidth(), getHeight());
         myRenderer.setEmpty(e);
         setRenderer(myRenderer);
-
-//        HelloOpenGLES10Renderer renderer = new HelloOpenGLES10Renderer(getWidth(), getHeight());
-//        renderer.setEmpty(e);
-//        setRenderer(renderer);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.d(TAG, "onTouchEvent: " + event.getX() + ", " + event.getY());
 
         // Perform an action that depends on the coordinates of the event
         int x = (int) event.getX();

@@ -18,6 +18,7 @@ import static android.opengl.GLES10.glEnable;
 import static android.opengl.GLES10.glLoadIdentity;
 import static android.opengl.GLES10.glPopMatrix;
 import static android.opengl.GLES10.glPushMatrix;
+import static com.example.arthurmanoha.openglandroid.HelloOpenGLES10.TAG;
 import static java.lang.Math.sin;
 import static javax.microedition.khronos.opengles.GL10.GL_COLOR_ARRAY;
 import static javax.microedition.khronos.opengles.GL10.GL_DEPTH_TEST;
@@ -29,7 +30,6 @@ public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
     private FloatBuffer squareVB;
     private FloatBuffer cubeVB;
     private FloatBuffer colorVB;
-    private float angle;
     private int width, height;
 
     // Point of view; the two images will be rendered from either side of this point.
@@ -54,7 +54,6 @@ public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
 
         glEnable(GL_DEPTH_TEST);
         gl.glEnable(GL10.GL_BLEND);
-//        gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 
         // Set the background frame color
         gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -64,13 +63,12 @@ public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
 
         // Enable use of vertex arrays
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
-//        gl.glEnableClientState(GL10.GL_COLOR_ARRAY);
-
-        // Init the orientation of the triangle
-        angle = 0;
     }
 
     public void onDrawFrame(GL10 gl) {
+
+        Empty drawEmpty = viewerEmpty.clone();
+
         // Redraw background color
         gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
@@ -78,56 +76,49 @@ public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
         // Set GL_MODELVIEW transformation mode
         gl.glMatrixMode(GL_MODELVIEW);
 
-        long time = SystemClock.uptimeMillis();
-        angle = 0.0012f * ((int) time);
-//        viewerEmpty.resetRotation();
-
-//        viewerEmpty.rotateLocalY(-0.25f);
-//        viewerEmpty.rotateGlobalZ(angle);
-
-        Vector realTarget = viewerEmpty.getPos().sum(viewerEmpty.getTarget());
-//        Log.d(TAG, "onDrawFrame: realTarget is " + realTarget);
-        viewerEmpty.centerOnTarget(0, 0, 0);
+        drawEmpty.centerOnTarget(0, 0, 0);
 
         float eyeX, eyeY, eyeZ;
 
-        eyeX = viewerEmpty.getPos().getX();
-        eyeY = viewerEmpty.getPos().getY();
-        eyeZ = viewerEmpty.getPos().getZ();
+        eyeX = drawEmpty.getPos().getX();
+        eyeY = drawEmpty.getPos().getY();
+        eyeZ = drawEmpty.getPos().getZ();
 
-//        eyeX = viewerEmpty.getLeftPos().getX();
-//        eyeY = viewerEmpty.getLeftPos().getY();
-//        eyeZ = viewerEmpty.getLeftPos().getZ();
+        eyeX = drawEmpty.getLeftPos().getX();
+        eyeY = drawEmpty.getLeftPos().getY();
+        eyeZ = drawEmpty.getLeftPos().getZ();
+        Log.d(TAG, "onDrawFrame: " + (drawEmpty.getPos().getX() - eyeX) + ", "
+                + (drawEmpty.getPos().getY() - eyeY) + ", "
+                + (drawEmpty.getPos().getZ() - eyeZ));
 
         // Left image
-        gl.glLoadIdentity();
         gl.glViewport((int) ((width / 2) * (1 - screenPercentage)),
                 (int) ((height / 2) * (1 - screenPercentage)),
                 (int) (screenPercentage * width / 2),
                 (int) (screenPercentage * height));
+        gl.glLoadIdentity();
         GLU.gluLookAt(gl, eyeX, eyeY, eyeZ,
-                eyeX + viewerEmpty.getTarget().getX(), eyeY + viewerEmpty.getTarget().getY(), eyeZ + viewerEmpty.getTarget().getZ(),
-                viewerEmpty.getVertic().getX(), viewerEmpty.getVertic().getY(), viewerEmpty.getVertic().getZ());
+                eyeX + drawEmpty.getTarget().getX(), eyeY + drawEmpty.getTarget().getY(), eyeZ + drawEmpty.getTarget().getZ(),
+                drawEmpty.getVertic().getX(), drawEmpty.getVertic().getY(), drawEmpty.getVertic().getZ());
         drawHalfFrame(gl);
 
-        eyeX = viewerEmpty.getPos().getX();
-        eyeY = viewerEmpty.getPos().getY();
-        eyeZ = viewerEmpty.getPos().getZ();
+        eyeX = drawEmpty.getPos().getX();
+        eyeY = drawEmpty.getPos().getY();
+        eyeZ = drawEmpty.getPos().getZ();
 
-        //        eyeX = viewerEmpty.getRightPos().getX();
-//        eyeY = viewerEmpty.getRightPos().getY();
-//        eyeZ = viewerEmpty.getRightPos().getZ();
+//        eyeX = drawEmpty.getRightPos().getX();
+//        eyeY = drawEmpty.getRightPos().getY();
+//        eyeZ = drawEmpty.getRightPos().getZ();
 
         // Right image
-        gl.glLoadIdentity();
         gl.glViewport(width / 2,
                 (int) ((height / 2) * (1 - screenPercentage)),
                 (int) (screenPercentage * width / 2),
                 (int) (screenPercentage * height));
-//        gl.glMatrixMode(GL_MODELVIEW);
+        gl.glLoadIdentity();
         GLU.gluLookAt(gl, eyeX, eyeY, eyeZ,
-                eyeX + viewerEmpty.getTarget().getX(), eyeY + viewerEmpty.getTarget().getY(), eyeZ + viewerEmpty.getTarget().getZ(),
-                viewerEmpty.getVertic().getX(), viewerEmpty.getVertic().getY(), viewerEmpty.getVertic().getZ());
+                eyeX + drawEmpty.getTarget().getX(), eyeY + drawEmpty.getTarget().getY(), eyeZ + drawEmpty.getTarget().getZ(),
+                drawEmpty.getVertic().getX(), drawEmpty.getVertic().getY(), drawEmpty.getVertic().getZ());
         drawHalfFrame(gl);
 
 
@@ -168,17 +159,19 @@ public class HelloOpenGLES10Renderer implements GLSurfaceView.Renderer {
 
     private void initShapes() {
 
+        float triangleAltitude=3.0f;
         float triangleCoords[] = {
                 // X, Y, Z
-                -0.5f, -0.25f, 2,
-                0.5f, -0.25f, 2,
-                0.0f, 0.559016994f, 2
+                -0.5f, -0.25f, triangleAltitude,
+                0.5f, -0.25f, triangleAltitude,
+                0.0f, 0.559016994f, triangleAltitude
         };
+        float squareAltitude = -3.0f;
         float squareCoords[] = {
-                -1f, -1f, 1.1f,
-                -1f, 1f, 1.1f,
-                1f, -1f, 1.1f,
-                1f, 1f, 1.1f
+                -1f, -1f, squareAltitude,
+                -1f, 1f, squareAltitude,
+                1f, -1f, squareAltitude,
+                1f, 1f, squareAltitude
         };
         float cubeCoords[] = {
                 -1.f, 1.f, 1.f,     // Front-top-left
