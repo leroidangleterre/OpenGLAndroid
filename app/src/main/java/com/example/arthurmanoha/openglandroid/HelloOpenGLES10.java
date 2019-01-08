@@ -1,5 +1,6 @@
 package com.example.arthurmanoha.openglandroid;
 
+import android.content.pm.ActivityInfo;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -32,6 +33,9 @@ public class HelloOpenGLES10 extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+
         userEmpty = new Empty();
         userEmpty.setPos(-10, 0, 0);
         userEmpty.setTarget(10, 0, 0);
@@ -61,6 +65,7 @@ public class HelloOpenGLES10 extends AppCompatActivity {
 
 //                Log.d(TAG, "onSensorChanged: orientations: " + orientationsDegrees[0] + ", " + orientationsDegrees[1] + ", " + orientationsDegrees[2]);
                 userEmpty.resetRotation();
+                userEmpty.rotateGlobalX(orientations[1]);
                 userEmpty.rotateGlobalY((float) (-orientations[2] + PI / 2));
                 userEmpty.rotateGlobalZAroundTarget(-orientations[0]);
             }
@@ -82,6 +87,7 @@ public class HelloOpenGLES10 extends AppCompatActivity {
         // you should consider de-allocating objects that
         // consume significant memory here.
         mGLView.onPause();
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
     }
 
     @Override

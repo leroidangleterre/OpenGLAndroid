@@ -92,6 +92,16 @@ public class Vector {
     }
 
     /**
+     * Rotate the empty around the global X-axis.
+     */
+    public void rotateGlobalX(float angle) {
+        float oldY = y;
+        float oldZ = z;
+        y = (float) (oldY * cos(angle) - oldZ * sin(angle));
+        z = (float) (oldZ * cos(angle) + oldY * sin(angle));
+    }
+
+    /**
      * Rotate the empty around the global Y-axis.
      */
     public void rotateGlobalY(float angle) {
