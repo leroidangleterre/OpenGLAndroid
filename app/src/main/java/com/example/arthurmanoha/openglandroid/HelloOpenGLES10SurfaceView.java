@@ -4,7 +4,6 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 
 import static com.example.arthurmanoha.openglandroid.HelloOpenGLES10.TAG;
 
@@ -14,9 +13,14 @@ class HelloOpenGLES10SurfaceView extends GLSurfaceView {
         super(context);
 
         // Set the Renderer for drawing on the GLSurfaceView
-        HelloOpenGLES10RendererYolo renderer = new HelloOpenGLES10RendererYolo(getWidth(), getHeight());
-        renderer.setEmpty(e);
-        setRenderer(renderer);
+
+        com.example.arthurmanoha.openglandroid.HelloOpenGLES10Renderer myRenderer = new com.example.arthurmanoha.openglandroid.HelloOpenGLES10Renderer(getWidth(), getHeight());
+        myRenderer.setEmpty(e);
+        setRenderer(myRenderer);
+
+//        HelloOpenGLES10Renderer renderer = new HelloOpenGLES10Renderer(getWidth(), getHeight());
+//        renderer.setEmpty(e);
+//        setRenderer(renderer);
     }
 
     @Override
